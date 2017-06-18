@@ -8,53 +8,53 @@ goog.require('lime.Sprite');
  * @param {} gameObj
  */
 farming.Land = function(gameObj, playerObj) {
-    goog.base(this);
+    goog.base(this); 
     this.setAnchorPoint(0, 0);
     this.setSize(gameObj.tile_size,gameObj.tile_size);
     this.setFill('images/bare_land.png');
     
     this.state = this.EMPTY;
     
-    //user input
+    //user input :khi nguoi dung kick chout.
     var land = this;
     goog.events.listen(this,['mousedown', 'touchstart'], function(e) {
         e.event.stopPropagation();        
         if(land.state == land.EMPTY && playerObj.money >= gameObj.costPlowing) {
-            //plow land
-            land.setFill('images/plowed.png')
-            land.state = land.PLOWED;
+            //plow land: kiem tra dat neu trang thai la EMPTY thi lam hanh dong cay dat.
+            land.setFill('images/plowed.png') // doi anh.
+            land.state = land.PLOWED; // doi trang thai.
             
-            //update player money
-            playerObj.money -= gameObj.costPlowing;
+            //update player money: cap nhat tien sau khi cay dat.
+            playerObj.money -= gameObj.costPlowing;// tru tien cay dat.
             gameObj.updateMoney();
         }
         else if(land.state == land.PLOWED && playerObj.money >= gameObj.crops[playerObj.currentCrop].cost) {
-            //plant
-            land.setFill('images/growing.png');
-            land.state = land.GROWING;
+            //plant: kiem tra neu dat da duoc cay thi trong cay.
+            land.setFill('images/growing.png'); // doi anh.
+            land.state = land.GROWING; // doi trang thai.
             
-            //store crop and left time for it to be ready and to die
+            //store crop and left time for it to be ready and to die: dat thoi gian cho 2 giai doan lon va chet cua cay.
             land.crop = playerObj.currentCrop;
-            land.ripeTime = gameObj.crops[playerObj.currentCrop].time_to_ripe * 1000;
-            land.deathTime = gameObj.crops[playerObj.currentCrop].time_to_death * 1000;
+            land.ripeTime = gameObj.crops[playerObj.currentCrop].time_to_ripe * 1000; // cong thoi gian lon.
+            land.deathTime = gameObj.crops[playerObj.currentCrop].time_to_death * 1000; // cong thoi gain chet.
             
-            //update player money
-            playerObj.money -= gameObj.crops[playerObj.currentCrop].cost;
+            //update player money: cap nhat so tien sau khi trong cay.
+            playerObj.money -= gameObj.crops[playerObj.currentCrop].cost; // tru tien trong cay.
             gameObj.updateMoney();
         }
         else if(land.state == land.READY ) {
-            //harvest
-            land.setFill('images/bare_land.png');
-            land.state = land.EMPTY;
+            //harvest:kiem tra neu cay san sang thi thu hoach.
+            land.setFill('images/bare_land.png'); //doi anh.
+            land.state = land.EMPTY; //doi trang thai.
             
             //update player money
-            playerObj.money += gameObj.crops[land.crop].revenue;
+            playerObj.money += gameObj.crops[land.crop].revenue;// cong tien sau khi thu hoach.
             gameObj.updateMoney();
         }        
     });
     
-    //growing plants
-    dt = 1000;
+    //growing plants: qua trinh tru thoi gian cau cay de duoc thu hoach hoac chet.
+    dt = 1000; //1 giay
     lime.scheduleManager.scheduleWithDelay(function() {
         if(this.state == this.GROWING) {            
             if(this.ripeTime <= 0) {
